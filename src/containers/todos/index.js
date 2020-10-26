@@ -8,6 +8,7 @@ import { todosRef } from '../../firebase';
 
 const TodosContainer = () => {
     const [todos, setTodos] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const handleFormSubmit = (todo) => {
         let newTodo = todosRef.push();
@@ -45,6 +46,7 @@ const TodosContainer = () => {
             }
 
             setTodos(newState);
+            setLoading(false);
         });
     }, [])
 
@@ -87,7 +89,7 @@ const TodosContainer = () => {
                 xl={18}
             >
                 <Card title="Todo List">
-                    <TodoList onTodoRemove={handleTodoRemove} onTodoToggle={handleTodoToggle} todos={todos} />
+                    <TodoList onTodoRemove={handleTodoRemove} onTodoToggle={handleTodoToggle} todos={todos} loading={loading} />
                 </Card>
             </Col>
         </Row>

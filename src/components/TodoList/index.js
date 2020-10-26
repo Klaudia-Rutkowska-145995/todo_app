@@ -3,9 +3,10 @@ import { List, Empty } from 'antd';
 
 import TodoItem from '../TodoItem';
 
-const TodoList = ({ todos, onTodoRemove, onTodoToggle }) => {
+const TodoList = ({ loading = false, todos, onTodoRemove, onTodoToggle }) => {
     return (
         <List
+            loading={loading}
             locale={{
                 emptyText: <Empty description="Todos not found" />
             }}
