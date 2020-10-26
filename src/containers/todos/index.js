@@ -4,14 +4,17 @@ import { Row, Col, Card, PageHeader, message } from "antd";
 import AddTodoForm from '../../components/AddTodoForm';
 import TodoList from "../../components/TodoList";
 
-import { todosRef } from '../../firebase';
+import { usersRef } from '../../firebase';
+
+import { getUserID } from '../../localStorage';
 
 const TodosContainer = () => {
+    const [userID] = useState(getUserID());
     const [todos, setTodos] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const handleFormSubmit = (todo) => {
-        let newTodo = todosRef.push();
+        let newTodo = usersRef.child(userID).push();
 
         todo.id = newTodo.key;
 
@@ -21,19 +24,19 @@ const TodosContainer = () => {
     }
 
     const handleTodoRemove = (todo) => {
-        todosRef.child(todo.id).remove();
+        usersRef.child(userID).child(todo.id).remove();
 
         message.warn('Todo removed!');
     }
 
     const handleTodoToggle = (todo) => {
-        todosRef.child(todo.id).set({ ...todo, completed: !todo.completed });
+        usersRef.child(userID).child(todo.id).set({ ...todo, completed: !todo.completed });
 
         message.info('Todo toggled!');
     }
 
     useEffect(() => {
-        todosRef.on('value', (snapshot) => {
+        usersRef.child(userID).on('value', (snapshot) => {
             let items = snapshot.val();
             let newState = [];
 
@@ -48,7 +51,7 @@ const TodosContainer = () => {
             setTodos(newState);
             setLoading(false);
         });
-    }, [])
+    }, [userID])
 
     return (
         <Row
