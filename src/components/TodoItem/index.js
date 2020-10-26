@@ -23,7 +23,7 @@ const TodoItem = ({ todo, onTodoRemove, onTodoToggle }) => {
                     <Button type="primary" icon={<DeleteFilled />} shape="circle" size="small" danger />
                 </Popconfirm>
             ]}
-            key={todo.name}
+            key={todo.id}
         >
             <div>
                 <Tag color={todo.completed ? 'green' : 'red'}>

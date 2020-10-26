@@ -1,41 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, PageHeader, message } from "antd";
 
 import AddTodoForm from '../../components/AddTodoForm';
 import TodoList from "../../components/TodoList";
 
+import { todosRef } from '../../firebase';
+
 const TodosContainer = () => {
     const [todos, setTodos] = useState([]);
 
     const handleFormSubmit = (todo) => {
-        setTodos([...todos, todo]);
+        let newTodo = todosRef.push();
+
+        todo.id = newTodo.key;
+
+        newTodo.set(todo);
 
         message.success('Todo added!');
     }
 
     const handleTodoRemove = (todo) => {
-        const array = [...todos];
-        const index = array.indexOf(todo);
+        todosRef.child(todo.id).remove();
 
-        if (index > -1) {
-            array.splice(index, 1);
-            setTodos(array);
-
-            message.warn('Todo removed!');
-        }
+        message.warn('Todo removed!');
     }
 
     const handleTodoToggle = (todo) => {
-        const array = [...todos];
-        const index = array.indexOf(todo);
+        todosRef.child(todo.id).set({ ...todo, completed: !todo.completed });
 
-        if (index > -1) {
-            array[index].completed = !array[index].completed;
-            setTodos(array);
-
-            message.info('Todo toggled!');
-        }
+        message.info('Todo toggled!');
     }
+
+    useEffect(() => {
+        todosRef.on('value', (snapshot) => {
+            let items = snapshot.val();
+            let newState = [];
+
+            for (let item in items) {
+                newState.push({
+                    id: item,
+                    name: items[item].name,
+                    completed: items[item].completed
+                })
+            }
+
+            setTodos(newState);
+        });
+    }, [])
 
     return (
         <Row
